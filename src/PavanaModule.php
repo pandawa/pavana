@@ -35,14 +35,14 @@ final class PavanaModule extends AbstractModule
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__.'/../../config/pavana.php' => config_path('pavana.php'),
+                __DIR__.'/../config/pavana.php' => config_path('pavana.php'),
             ], 'config');
         }
     }
 
     protected function init(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../../config/pavana.php', 'pavana');
+        $this->mergeConfigFrom(__DIR__.'/../config/pavana.php', 'pavana');
 
         $this->registerPlugins();
         $this->registerHttpHandlerFactory();
