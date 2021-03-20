@@ -20,7 +20,7 @@ trait PavanaProvider
 
     public function registerPavanaProvider(): void
     {
-        $configName = Str::snake($this->getModuleName());
+        $configName = str_replace('-', '_', $this->getModuleName());
 
         if (!empty($clients = $this->app['config']->get(sprintf('modules.pavana.%s', $configName), []))) {
             $this->registerScopeClients($clients);
