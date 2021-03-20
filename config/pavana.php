@@ -5,6 +5,9 @@ return [
     // Set default http request timeout
     'timeout' => 5,
 
+    // Set default send retries
+    'retries' => 1,
+
     // Set default http headers
     'headers' => [],
 

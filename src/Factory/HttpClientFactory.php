@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Pandawa\Pavana\Factory;
 
 use Http\Client\Common\Plugin;
+use Http\Client\Common\Plugin\RetryPlugin;
 use Http\Client\HttpAsyncClient;
 use Illuminate\Contracts\Container\Container;
 use Pandawa\Pavana\Contract\HttpClient as HttpClientContract;
@@ -74,12 +75,18 @@ final class HttpClientFactory implements HttpClientFactoryContract
 
     private function createPlugins(Options $options): array
     {
-        return array_map(function ($plugin) {
-            if ($plugin instanceof Plugin) {
-                return $plugin;
-            }
+        return array_merge(
+            [
+                // Default plugins
+                new RetryPlugin(['retries' => $options->getRetries()]),
+            ],
+            array_map(function ($plugin) {
+                if ($plugin instanceof Plugin) {
+                    return $plugin;
+                }
 
-            return $this->container->get($plugin);
-        }, $options->getPlugins());
+                return $this->container->get($plugin);
+            }, $options->getPlugins())
+        );
     }
 }

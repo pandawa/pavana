@@ -79,6 +79,11 @@ final class Options
         return $this->options['user_agent'];
     }
 
+    public function getRetries(): int
+    {
+        return $this->options['retries'];
+    }
+
     /**
      * @return HttpAsyncClient|string|null
      */
@@ -104,6 +109,7 @@ final class Options
     {
         $this->resolver->setDefaults([
             'timeout'         => 5,
+            'retries'         => 1,
             'http_proxy'      => null,
             'http_errors'     => false,
             'base_uri'        => null,
