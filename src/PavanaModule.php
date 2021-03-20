@@ -11,12 +11,15 @@ use Pandawa\Pavana\Contract\HttpClientFactory as HttpClientFactoryContract;
 use Pandawa\Pavana\Contract\HttpHandlerFactory as HttpHandlerFactoryContract;
 use Pandawa\Pavana\Factory\HttpClientFactory;
 use Pandawa\Pavana\Factory\HttpHandlerFactory;
+use Pandawa\Pavana\Plugin\JsonDecodePlugin;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
 final class PavanaModule extends AbstractModule
 {
+    use PavanaProvider;
+
     public function provides(): array
     {
         return array_merge(
@@ -24,7 +27,7 @@ final class PavanaModule extends AbstractModule
                 HttpHandlerFactoryContract::class,
                 HttpClientFactoryContract::class,
             ],
-            array_keys($this->app['config']['pavana'])
+            $this->registeredClients
         );
     }
 
@@ -41,14 +44,15 @@ final class PavanaModule extends AbstractModule
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/pavana.php', 'pavana');
 
+        $this->registerPlugins();
         $this->registerHttpHandlerFactory();
         $this->registerHttpClientFactory();
+        $this->registerScopeClients($this->app['config']['pavana']['clients'] ?? []);
+    }
 
-        foreach ($this->app['config']['pavana'] ?? [] as $key => $client) {
-            $this->app->singleton($key, function (Application $app) use ($client) {
-                return $app[HttpClientFactoryContract::class]->create($client);
-            });
-        }
+    private function registerPlugins(): void
+    {
+        $this->app->bind('pavana.plugins.json_decode', JsonDecodePlugin::class);
     }
 
     private function registerHttpHandlerFactory(): void
