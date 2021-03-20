@@ -22,7 +22,7 @@ trait PavanaProvider
     {
         $configName = Str::snake($this->getModuleName());
 
-        if (!empty($clients = $this->app['config']->get(sprintf('modules.pavana.%s', $configName), $configName))) {
+        if (!empty($clients = $this->app['config']->get(sprintf('modules.pavana.%s', $configName), []))) {
             $this->registerScopeClients($clients);
         }
     }
