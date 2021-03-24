@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Pandawa\Pavana\Factory;
 
 use GuzzleHttp\RequestOptions as GuzzleHttpClientOptions;
-use Http\Adapter\Guzzle6\Client as GuzzleHttpClient;
+use Http\Adapter\Guzzle7\Client as GuzzleHttpClient;
 use Http\Client\HttpAsyncClient;
 use Pandawa\Pavana\Contract\HttpHandlerFactory as HttpHandlerFactoryContract;
 use Pandawa\Pavana\Options;
