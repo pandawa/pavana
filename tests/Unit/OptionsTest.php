@@ -18,7 +18,7 @@ class OptionsTest extends TestCase
 
         $this->assertSame(10, $options->getTimeout());
         $this->assertSame(['json'], $options->getPlugins());
-        $this->assertSame(true, $options->getHttpErrors());
+        $this->assertSame(true, $options->isHttpErrors());
     }
 
     public function testOverwriteOptions(): void

@@ -5,14 +5,19 @@ declare(strict_types=1);
 namespace Pandawa\Pavana\Factory;
 
 use Http\Client\Common\Plugin;
+use Http\Client\Common\Plugin\DecoderPlugin;
+use Http\Client\Common\Plugin\ErrorPlugin;
 use Http\Client\Common\Plugin\RetryPlugin;
 use Http\Client\HttpAsyncClient;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Support\Arr;
 use Pandawa\Pavana\Contract\HttpClient as HttpClientContract;
 use Pandawa\Pavana\Contract\HttpClientFactory as HttpClientFactoryContract;
 use Pandawa\Pavana\Contract\RequestFactory as RequestFactoryContract;
 use Pandawa\Pavana\HttpClient;
 use Pandawa\Pavana\Options;
+use Pandawa\Pavana\Plugin\GzipEncoderPlugin;
+use Psr\Http\Message\StreamFactoryInterface;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
@@ -21,12 +26,14 @@ final class HttpClientFactory implements HttpClientFactoryContract
 {
     private Container $container;
     private HttpHandlerFactory $httpHandlerFactory;
+    private StreamFactoryInterface $streamFactory;
     private array $defaults;
 
-    public function __construct(Container $container, HttpHandlerFactory $httpHandlerFactory, array $defaults = [])
+    public function __construct(Container $container, HttpHandlerFactory $httpHandlerFactory, StreamFactoryInterface $streamFactory, array $defaults = [])
     {
         $this->container = $container;
         $this->httpHandlerFactory = $httpHandlerFactory;
+        $this->streamFactory = $streamFactory;
         $this->defaults = $defaults;
     }
 
@@ -75,18 +82,25 @@ final class HttpClientFactory implements HttpClientFactoryContract
 
     private function createPlugins(Options $options): array
     {
-        return array_merge(
-            [
-                // Default plugins
-                new RetryPlugin(['retries' => $options->getRetries()]),
-            ],
-            array_map(function ($plugin) {
-                if ($plugin instanceof Plugin) {
-                    return $plugin;
-                }
+        $plugins = array_map(function ($plugin) {
+            if ($plugin instanceof Plugin) {
+                return $plugin;
+            }
 
-                return $this->container->get($plugin);
-            }, $options->getPlugins())
-        );
+            return $this->container->get($plugin);
+        }, $options->getPlugins());
+
+        if ($options->isEnableCompression()) {
+            $plugins = Arr::prepend($plugins, new GzipEncoderPlugin($this->streamFactory));
+            $plugins = Arr::prepend($plugins, new DecoderPlugin());
+        }
+
+        if ($options->isHttpErrors()) {
+            $plugins = Arr::prepend($plugins, new ErrorPlugin());
+        }
+
+        $plugins = Arr::prepend($plugins, new RetryPlugin(['retries' => $options->getRetries()]));
+
+        return $plugins;
     }
 }

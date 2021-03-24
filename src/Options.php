@@ -54,9 +54,14 @@ final class Options
         return $this->options['base_uri'];
     }
 
-    public function getHttpErrors(): bool
+    public function isHttpErrors(): bool
     {
         return $this->options['http_errors'];
+    }
+
+    public function isEnableCompression(): bool
+    {
+        return $this->options['enable_compression'];
     }
 
     public function getHeaders(): array
@@ -108,17 +113,18 @@ final class Options
     private function configureDefaults(array $options): void
     {
         $this->resolver->setDefaults([
-            'timeout'         => 5,
-            'retries'         => 1,
-            'http_proxy'      => null,
-            'http_errors'     => false,
-            'base_uri'        => null,
-            'user_agent'      => sprintf('Pavana/%d', HttpClient::MAJOR_VERSION),
-            'headers'         => [],
-            'version'         => '1.1',
-            'http_handler'    => null,
-            'request_factory' => null,
-            'plugins'         => [],
+            'timeout'            => 5,
+            'retries'            => 1,
+            'http_proxy'         => null,
+            'http_errors'        => false,
+            'enable_compression' => true,
+            'base_uri'           => null,
+            'user_agent'         => sprintf('Pavana/%d', HttpClient::MAJOR_VERSION),
+            'headers'            => [],
+            'version'            => '1.1',
+            'http_handler'       => null,
+            'request_factory'    => null,
+            'plugins'            => [],
         ]);
     }
 }

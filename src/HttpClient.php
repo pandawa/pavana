@@ -8,6 +8,7 @@ use GuzzleHttp\Promise\Utils;
 use Http\Client\Common\Plugin;
 use Http\Client\HttpAsyncClient as HttpAsyncClientContract;
 use Http\Promise\Promise;
+use Illuminate\Support\Arr;
 use Pandawa\Pavana\Contract\HttpClient as HttpClientContract;
 use Pandawa\Pavana\Contract\RequestFactory;
 use Psr\Http\Message\RequestInterface;
@@ -49,7 +50,7 @@ final class HttpClient implements HttpClientContract
 
     public function addPlugin(Plugin $plugin): void
     {
-        $this->plugins[] = $plugin;
+        $this->plugins = Arr::prepend($this->plugins, $plugin);
     }
 
     /**

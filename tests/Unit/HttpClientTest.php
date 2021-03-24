@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Unit;
 
+use Http\Client\Common\Exception\ClientErrorException;
 use Http\Client\HttpAsyncClient;
+use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Promise\Promise;
 use Illuminate\Container\Container;
 use Pandawa\Pavana\BatchRequest;
@@ -83,9 +85,10 @@ class HttpClientTest extends TestCase
      */
     public function testHttpClientFactory(HttpHandlerFactory $httpHandlerFactory, RequestFactory $requestFactory): HttpClient
     {
-        $factory = new HttpClientFactory(new Container(), $httpHandlerFactory, [
+        $factory = new HttpClientFactory(new Container(), $httpHandlerFactory, Psr17FactoryDiscovery::findStreamFactory(), [
             'timeout'         => 10,
             'request_factory' => $requestFactory,
+            'http_errors'     => true,
         ]);
         $httpClient = $factory->create();
 
@@ -161,7 +164,7 @@ class HttpClientTest extends TestCase
         $failure = $responses->getFailureResponses();
 
         $this->assertArrayHasKey('not_found', $failure);
-        $this->assertSame(404, $failure['not_found']->getStatusCode());
+        $this->assertSame(404, $failure['not_found']->getCode());
     }
 
     /**
@@ -181,11 +184,30 @@ class HttpClientTest extends TestCase
         $this->assertSame('pong', $data['data']);
     }
 
+    /**
+     * @depends testHttpClientFactory
+     *
+     * @param HttpClient $httpClient
+     */
+    public function testHttpException(HttpClient $httpClient): void
+    {
+        try {
+            $httpClient->request('GET', 'ping2');
+        } catch (\Exception $e) {
+            $this->assertInstanceOf(ClientErrorException::class, $e);
+
+            if ($e instanceof ClientErrorException) {
+                $this->assertSame(404, $e->getCode());
+                $this->assertInstanceOf(ResponseInterface::class, $e->getResponse());
+            }
+        }
+    }
+
     private function getOptions(): Options
     {
         return new Options([
             'base_uri' => 'https://api.ammana.id/v3/',
-            'headers' => [
+            'headers'  => [
                 'Accept' => 'application/json',
             ],
         ]);

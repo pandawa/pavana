@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Pandawa\Pavana;
 
+use Http\Client\Exception\HttpException;
 use Http\Promise\Promise;
 use Psr\Http\Message\ResponseInterface;
 
@@ -36,32 +37,35 @@ final class BatchResponse
                     $batchResponse->addSuccess($key, $response['value']);
                 }
             } else {
-                $batchResponse->addFailure($key, $response['value']);
+                $batchResponse->addFailure($key, $response['reason']);
             }
         });
 
         return $batchResponse;
     }
 
-    public function addSuccess(string $key, ResponseInterface $response): void
+    public function addSuccess(string $key, $response): void
     {
         $this->responses['success'][$key] = $response;
     }
 
-    public function addFailure(string $key, ResponseInterface $response): void
+    public function addFailure(string $key, $response): void
     {
         $this->responses['failure'][$key] = $response;
         $this->totalFailure++;
     }
 
     /**
-     * @return ResponseInterface[]
+     * @return ResponseInterface[]|mixed
      */
     public function getSuccessResponses(): array
     {
         return $this->responses['success'];
     }
 
+    /**
+     * @return HttpException[]|mixed
+     */
     public function getFailureResponses(): array
     {
         return $this->responses['failure'];
