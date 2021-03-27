@@ -82,25 +82,28 @@ final class HttpClientFactory implements HttpClientFactoryContract
 
     private function createPlugins(Options $options): array
     {
-        $plugins = array_map(function ($plugin) {
-            if ($plugin instanceof Plugin) {
-                return $plugin;
-            }
-
-            return $this->container->get($plugin);
-        }, $options->getPlugins());
-
-        if ($options->isEnableCompression()) {
-            $plugins = Arr::prepend($plugins, new GzipEncoderPlugin($this->streamFactory));
-            $plugins = Arr::prepend($plugins, new DecoderPlugin());
-        }
+        $defaults = [
+            new RetryPlugin(['retries' => $options->getRetries()]),
+        ];
 
         if ($options->isHttpErrors()) {
-            $plugins = Arr::prepend($plugins, new ErrorPlugin());
+            $defaults[] = new ErrorPlugin();
         }
 
-        $plugins = Arr::prepend($plugins, new RetryPlugin(['retries' => $options->getRetries()]));
+        if ($options->isEnableCompression()) {
+            $defaults[] = new GzipEncoderPlugin($this->streamFactory);
+            $defaults[] = new DecoderPlugin();
+        }
 
-        return $plugins;
+        return array_merge(
+            array_map(function ($plugin) {
+                if ($plugin instanceof Plugin) {
+                    return $plugin;
+                }
+
+                return $this->container->get($plugin);
+            }, $options->getPlugins()),
+            $defaults
+        );
     }
 }
