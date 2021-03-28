@@ -53,6 +53,11 @@ final class HttpClient implements HttpClientContract
         $this->plugins = Arr::prepend($this->plugins, $plugin);
     }
 
+    public function prependPlugin(Plugin $plugin): void
+    {
+        $this->plugins[] = $plugin;
+    }
+
     /**
      * {@inheritdoc}
      */

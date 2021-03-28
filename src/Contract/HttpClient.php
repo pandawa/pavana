@@ -22,6 +22,8 @@ interface HttpClient extends HttpAsyncClient, BaseHttpClient
 
     public function addPlugin(Plugin $plugin): void;
 
+    public function prependPlugin(Plugin $plugin): void;
+
     /**
      * @param string $method
      * @param string $uri
