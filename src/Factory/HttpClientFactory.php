@@ -10,39 +10,32 @@ use Http\Client\Common\Plugin\ErrorPlugin;
 use Http\Client\Common\Plugin\RetryPlugin;
 use Http\Client\HttpAsyncClient;
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Support\Arr;
-use Pandawa\Pavana\Contract\HttpClient as HttpClientContract;
-use Pandawa\Pavana\Contract\HttpClientFactory as HttpClientFactoryContract;
-use Pandawa\Pavana\Contract\RequestFactory as RequestFactoryContract;
-use Pandawa\Pavana\HttpClient;
-use Pandawa\Pavana\Options;
-use Pandawa\Pavana\Plugin\GzipEncoderPlugin;
+use Pandawa\Pavana\Contract\HttpClientFactoryInterface;
+use Pandawa\Pavana\Contract\HttpClientInterface;
+use Pandawa\Pavana\Contract\RequestFactoryInterface;
+use Pandawa\Pavana\HttpClient\HttpClient;
+use Pandawa\Pavana\HttpClient\Options;
+use Pandawa\Pavana\HttpClient\Plugin\GzipEncoderPlugin;
 use Psr\Http\Message\StreamFactoryInterface;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-final class HttpClientFactory implements HttpClientFactoryContract
+final class HttpClientFactory implements HttpClientFactoryInterface
 {
-    private Container $container;
-    private HttpHandlerFactory $httpHandlerFactory;
-    private StreamFactoryInterface $streamFactory;
-    private array $defaults;
-
-    public function __construct(Container $container, HttpHandlerFactory $httpHandlerFactory, StreamFactoryInterface $streamFactory, array $defaults = [])
-    {
-        $this->container = $container;
-        $this->httpHandlerFactory = $httpHandlerFactory;
-        $this->streamFactory = $streamFactory;
-        $this->defaults = $defaults;
+    public function __construct(
+        protected readonly Container $container,
+        protected readonly HttpHandlerFactory $httpHandlerFactory,
+        protected readonly StreamFactoryInterface $streamFactory,
+        protected readonly array $defaults = []
+    ) {
     }
 
-    public function create(array $options = []): HttpClientContract
+    public function create(array $options = []): HttpClientInterface
     {
         $options = $this->createOptions($options);
 
         return new HttpClient(
-            $options,
             $this->createHttpHandler($options),
             $this->createRequestFactory($options),
             $this->createPlugins($options)
@@ -67,10 +60,10 @@ final class HttpClientFactory implements HttpClientFactoryContract
         return $this->httpHandlerFactory->create($options);
     }
 
-    private function createRequestFactory(Options $options): RequestFactoryContract
+    private function createRequestFactory(Options $options): RequestFactoryInterface
     {
         if (null !== $requestFactory = $options->getRequestFactory()) {
-            if ($requestFactory instanceof RequestFactoryContract) {
+            if ($requestFactory instanceof RequestFactoryInterface) {
                 return $requestFactory;
             }
 
@@ -95,15 +88,15 @@ final class HttpClientFactory implements HttpClientFactoryContract
             $defaults[] = new DecoderPlugin();
         }
 
-        return array_merge(
-            array_map(function ($plugin) {
+        return [
+            ...array_map(function ($plugin) {
                 if ($plugin instanceof Plugin) {
                     return $plugin;
                 }
 
                 return $this->container->get($plugin);
             }, $options->getPlugins()),
-            $defaults
-        );
+            ...$defaults,
+        ];
     }
 }

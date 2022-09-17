@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Pandawa\Pavana\Factory;
 
 use GuzzleHttp\Psr7;
-use Pandawa\Pavana\Contract\RequestFactory as RequestFactoryContract;
-use Pandawa\Pavana\Options;
+use Pandawa\Pavana\Contract\RequestFactoryInterface as RequestFactoryContract;
+use Pandawa\Pavana\HttpClient\Options;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 
@@ -15,11 +15,8 @@ use Psr\Http\Message\UriInterface;
  */
 final class RequestFactory implements RequestFactoryContract
 {
-    private Options $defaults;
-
-    public function __construct(Options $defaults)
+    public function __construct(private readonly Options $defaults)
     {
-        $this->defaults = $defaults;
     }
 
     public function create(string $method, string $uri = '', array $options = []): RequestInterface

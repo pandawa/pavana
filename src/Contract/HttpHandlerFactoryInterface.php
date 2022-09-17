@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Pandawa\Pavana\Contract;
 
 use Http\Client\HttpAsyncClient;
-use Pandawa\Pavana\Options;
+use Pandawa\Pavana\HttpClient\Options;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-interface HttpHandlerFactory
+interface HttpHandlerFactoryInterface
 {
     public function create(Options $options): HttpAsyncClient;
 }

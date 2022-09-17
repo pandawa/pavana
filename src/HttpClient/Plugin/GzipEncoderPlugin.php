@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pandawa\Pavana\Plugin;
+namespace Pandawa\Pavana\HttpClient\Plugin;
 
 use Http\Client\Common\Plugin;
 use Http\Promise\Promise;
@@ -15,15 +15,11 @@ use RuntimeException;
  */
 final class GzipEncoderPlugin implements Plugin
 {
-    private StreamFactoryInterface $streamFactory;
-
-    public function __construct(StreamFactoryInterface $streamFactory)
+    public function __construct(private readonly StreamFactoryInterface $streamFactory)
     {
         if (!extension_loaded('zlib')) {
             throw new RuntimeException('The "zlib" extension must be enabled to use this plugin.');
         }
-
-        $this->streamFactory = $streamFactory;
     }
 
     public function handleRequest(RequestInterface $request, callable $next, callable $first): Promise

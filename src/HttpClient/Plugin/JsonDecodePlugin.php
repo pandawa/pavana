@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pandawa\Pavana\Plugin;
+namespace Pandawa\Pavana\HttpClient\Plugin;
 
 use Http\Client\Common\Plugin;
 use Http\Promise\Promise;

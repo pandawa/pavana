@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pandawa\Pavana;
+namespace Pandawa\Pavana\HttpClient\Plugin;
 
 use Http\Client\Common\Plugin;
 use Http\Promise\Promise;
@@ -14,18 +14,14 @@ use Psr\Http\Message\RequestInterface;
 final class PluginChain
 {
     /**
-     * @var Plugin[]
-     */
-    private array $plugins;
-
-    /**
      * @var callable
      */
     private $callback;
 
-    public function __construct(array $plugins, callable $callback)
-    {
-        $this->plugins = $plugins;
+    public function __construct(
+        private readonly array $plugins,
+        callable $callback
+    ) {
         $this->callback = $callback;
     }
 

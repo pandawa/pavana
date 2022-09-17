@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pandawa\Pavana;
+namespace Pandawa\Pavana\HttpClient;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 

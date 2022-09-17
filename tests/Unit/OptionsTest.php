@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Unit;
 
-use Pandawa\Pavana\Options;
+use Pandawa\Pavana\HttpClient\Options;
 use Pandawa\Pavana\Test\TestCase;
 
 /**

@@ -2,50 +2,30 @@
 
 declare(strict_types=1);
 
-namespace Pandawa\Pavana;
+namespace Pandawa\Pavana\HttpClient;
 
+use GuzzleHttp\Promise\PromiseInterface as GuzzlePromise;
 use GuzzleHttp\Promise\Utils;
 use Http\Client\Common\Plugin;
 use Http\Client\HttpAsyncClient as HttpAsyncClientContract;
 use Http\Promise\Promise;
 use Illuminate\Support\Arr;
-use Pandawa\Pavana\Contract\HttpClient as HttpClientContract;
-use Pandawa\Pavana\Contract\RequestFactory;
+use Pandawa\Pavana\Contract\HttpClientInterface;
+use Pandawa\Pavana\Contract\RequestFactoryInterface;
+use Pandawa\Pavana\HttpClient\Plugin\PluginChain;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use GuzzleHttp\Promise\PromiseInterface as GuzzlePromise;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-final class HttpClient implements HttpClientContract
+final class HttpClient implements HttpClientInterface
 {
-    /**
-     * @var Options
-     */
-    private Options $options;
-
-    /**
-     * @var HttpAsyncClientContract
-     */
-    private HttpAsyncClientContract $httpHandler;
-
-    /**
-     * @var Plugin[]
-     */
-    private array $plugins;
-
-    /**
-     * @var RequestFactory
-     */
-    private RequestFactory $requestFactory;
-
-    public function __construct(Options $options, HttpAsyncClientContract $httpHandler, RequestFactory $requestFactory, array $plugins = [])
-    {
-        $this->options = $options;
-        $this->httpHandler = $httpHandler;
-        $this->plugins = $plugins;
-        $this->requestFactory = $requestFactory;
+    public function __construct(
+        private readonly HttpAsyncClientContract $httpHandler,
+        private readonly RequestFactoryInterface $requestFactory,
+        private array $plugins = []
+    ) {
     }
 
     public function addPlugin(Plugin $plugin): void

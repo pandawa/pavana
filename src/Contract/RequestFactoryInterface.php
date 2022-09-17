@@ -9,7 +9,7 @@ use Psr\Http\Message\RequestInterface;
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-interface RequestFactory
+interface RequestFactoryInterface
 {
     public function create(string $method, string $uri = '', array $options = []): RequestInterface;
 }

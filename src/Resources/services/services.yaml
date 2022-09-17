@@ -1,0 +1,3 @@
+pavana.http_client.registry:
+  class: Pandawa\Pavana\HttpClient\HttpClientRegistry
+  alias: Pandawa\Pavana\Contract\HttpClientRegistryInterface

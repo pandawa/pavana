@@ -7,7 +7,7 @@ namespace Pandawa\Pavana\Contract;
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-interface HttpClientFactory
+interface HttpClientRegistryInterface
 {
-    public function create(array $options = []): HttpClient;
+    public function register(array $clients): void;
 }

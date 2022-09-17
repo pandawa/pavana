@@ -7,27 +7,24 @@ namespace Pandawa\Pavana\Factory;
 use GuzzleHttp\RequestOptions as GuzzleHttpClientOptions;
 use Http\Adapter\Guzzle7\Client as GuzzleHttpClient;
 use Http\Client\HttpAsyncClient;
-use Pandawa\Pavana\Contract\HttpHandlerFactory as HttpHandlerFactoryContract;
-use Pandawa\Pavana\Options;
+use Pandawa\Pavana\Contract\HttpHandlerFactoryInterface;
+use Pandawa\Pavana\HttpClient\Options;
+use RuntimeException;
 use Symfony\Component\HttpClient\HttpClient as SymfonyHttpClient;
 use Symfony\Component\HttpClient\HttplugClient as SymfonyHttplugClient;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-final class HttpHandlerFactory implements HttpHandlerFactoryContract
+final class HttpHandlerFactory implements HttpHandlerFactoryInterface
 {
     public function create(Options $options): HttpAsyncClient
     {
-        if (class_exists(SymfonyHttplugClient::class)) {
-            $httpClient = $this->createSymfonyHttpClient($options);
-        } elseif (class_exists(GuzzleHttpClient::class)) {
-            $httpClient = $this->createGuzzleHttpClient($options);
-        } else {
-            throw new \RuntimeException('There is no http handler detected!');
-        }
-
-        return $httpClient;
+        return match(true) {
+            class_exists(SymfonyHttplugClient::class) => $this->createSymfonyHttpClient($options),
+            class_exists(GuzzleHttpClient::class) => $this->createGuzzleHttpClient($options),
+            default => throw new RuntimeException('There is no http handler detected!')
+        };
     }
 
     private function createSymfonyHttpClient(Options $options): SymfonyHttplugClient

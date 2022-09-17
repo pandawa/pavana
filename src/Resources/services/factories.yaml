@@ -1,0 +1,15 @@
+__defines:
+  Contract: Pandawa\Pavana\Contract
+  Factory: Pandawa\Pavana\Factory
+
+psr17.factory.discovery:
+  class: Http\Discovery\Psr17FactoryDiscovery
+
+pavana.factory.http_handler:
+  class: ${Factory}\HttpHandlerFactory
+  alias: ${Contract}\HttpHandlerFactoryInterface
+
+pavana.factory.stream:
+  factory: ['@psr17.factory.discovery', 'findStreamFactory']
+  alias: Psr\Http\Message\StreamFactoryInterface
+

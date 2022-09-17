@@ -9,14 +9,14 @@ use Http\Client\HttpAsyncClient;
 use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Promise\Promise;
 use Illuminate\Container\Container;
-use Pandawa\Pavana\BatchRequest;
-use Pandawa\Pavana\BatchResponse;
-use Pandawa\Pavana\Contract\HttpClient;
+use Pandawa\Pavana\HttpClient\BatchRequest;
+use Pandawa\Pavana\HttpClient\BatchResponse;
+use Pandawa\Pavana\Contract\HttpClientInterface;
 use Pandawa\Pavana\Factory\HttpClientFactory;
 use Pandawa\Pavana\Factory\HttpHandlerFactory;
 use Pandawa\Pavana\Factory\RequestFactory;
-use Pandawa\Pavana\Options;
-use Pandawa\Pavana\Plugin\JsonDecodePlugin;
+use Pandawa\Pavana\HttpClient\Options;
+use Pandawa\Pavana\HttpClient\Plugin\JsonDecodePlugin;
 use Pandawa\Pavana\Test\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -81,9 +81,9 @@ class HttpClientTest extends TestCase
      * @param HttpHandlerFactory $httpHandlerFactory
      * @param RequestFactory     $requestFactory
      *
-     * @return HttpClient
+     * @return HttpClientInterface
      */
-    public function testHttpClientFactory(HttpHandlerFactory $httpHandlerFactory, RequestFactory $requestFactory): HttpClient
+    public function testHttpClientFactory(HttpHandlerFactory $httpHandlerFactory, RequestFactory $requestFactory): HttpClientInterface
     {
         $factory = new HttpClientFactory(new Container(), $httpHandlerFactory, Psr17FactoryDiscovery::findStreamFactory(), [
             'timeout'         => 10,
@@ -92,7 +92,7 @@ class HttpClientTest extends TestCase
         ]);
         $httpClient = $factory->create();
 
-        $this->assertInstanceOf(HttpClient::class, $httpClient);
+        $this->assertInstanceOf(HttpClientInterface::class, $httpClient);
 
         return $httpClient;
     }
@@ -100,9 +100,9 @@ class HttpClientTest extends TestCase
     /**
      * @depends testHttpClientFactory
      *
-     * @param HttpClient $httpClient
+     * @param HttpClientInterface $httpClient
      */
-    public function testSyncRequest(HttpClient $httpClient): void
+    public function testSyncRequest(HttpClientInterface $httpClient): void
     {
         $response = $httpClient->request('GET', 'ping');
         $data = json_decode($response->getBody()->getContents(), true);
@@ -115,9 +115,9 @@ class HttpClientTest extends TestCase
     /**
      * @depends testHttpClientFactory
      *
-     * @param HttpClient $httpClient
+     * @param HttpClientInterface $httpClient
      */
-    public function testAsyncRequest(HttpClient $httpClient): void
+    public function testAsyncRequest(HttpClientInterface $httpClient): void
     {
         $promise = $httpClient->requestAsync('GET', 'ping');
 
@@ -137,9 +137,9 @@ class HttpClientTest extends TestCase
     /**
      * @depends testHttpClientFactory
      *
-     * @param HttpClient $httpClient
+     * @param HttpClientInterface $httpClient
      */
-    public function testBatchRequests(HttpClient $httpClient): void
+    public function testBatchRequests(HttpClientInterface $httpClient): void
     {
         $responses = $httpClient->requestBatch(new BatchRequest([
             'ping'      => [
@@ -170,9 +170,9 @@ class HttpClientTest extends TestCase
     /**
      * @depends testHttpClientFactory
      *
-     * @param HttpClient $httpClient
+     * @param HttpClientInterface $httpClient
      */
-    public function testPlugin(HttpClient $httpClient): void
+    public function testPlugin(HttpClientInterface $httpClient): void
     {
         $httpClient = clone $httpClient;
         $httpClient->addPlugin(new JsonDecodePlugin());
@@ -187,9 +187,9 @@ class HttpClientTest extends TestCase
     /**
      * @depends testHttpClientFactory
      *
-     * @param HttpClient $httpClient
+     * @param HttpClientInterface $httpClient
      */
-    public function testHttpException(HttpClient $httpClient): void
+    public function testHttpException(HttpClientInterface $httpClient): void
     {
         try {
             $httpClient->request('GET', 'ping2');

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Pandawa\Pavana;
+namespace Pandawa\Pavana\HttpClient;
 
 use GuzzleHttp\Psr7;
 use Http\Client\HttpAsyncClient;
-use Pandawa\Pavana\Contract\HttpClient;
-use Pandawa\Pavana\Contract\RequestFactory;
+use Pandawa\Pavana\Contract\HttpClientInterface;
+use Pandawa\Pavana\Contract\RequestFactoryInterface;
 use Psr\Http\Message\UriInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -98,7 +98,7 @@ final class Options
     }
 
     /**
-     * @return RequestFactory|string|null
+     * @return RequestFactoryInterface|string|null
      */
     public function getRequestFactory()
     {
@@ -119,7 +119,7 @@ final class Options
             'http_errors'        => false,
             'enable_compression' => true,
             'base_uri'           => null,
-            'user_agent'         => sprintf('Pavana/%d', HttpClient::MAJOR_VERSION),
+            'user_agent'         => sprintf('Pavana/%d', HttpClientInterface::MAJOR_VERSION),
             'headers'            => [],
             'version'            => '1.1',
             'http_handler'       => null,

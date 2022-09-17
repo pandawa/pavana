@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pandawa\Pavana;
+namespace Pandawa\Pavana\HttpClient;
 
 use Http\Client\Exception\HttpException;
 use Http\Promise\Promise;

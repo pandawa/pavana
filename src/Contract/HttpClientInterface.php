@@ -8,15 +8,15 @@ use Http\Client\Common\Plugin;
 use Http\Client\HttpAsyncClient;
 use Http\Client\HttpClient as BaseHttpClient;
 use Http\Promise\Promise;
-use Pandawa\Pavana\BatchRequest;
-use Pandawa\Pavana\BatchResponse;
+use Pandawa\Pavana\HttpClient\BatchRequest;
+use Pandawa\Pavana\HttpClient\BatchResponse;
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\Promise\PromiseInterface as GuzzlePromise;
 
 /**
  * @author  Iqbal Maulana <iq.bluejack@gmail.com>
  */
-interface HttpClient extends HttpAsyncClient, BaseHttpClient
+interface HttpClientInterface extends HttpAsyncClient, BaseHttpClient
 {
     const MAJOR_VERSION = 1;
 
