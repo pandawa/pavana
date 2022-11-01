@@ -20,31 +20,29 @@ class ImportPavanaPlugin extends Plugin
     {
     }
 
-    public function boot(): void
-    {
-        $this->registry()->register(
-            $this->config()->get(
-                $this->getConfigKey(),
-                []
-            )
-        );
-    }
-
     public function configure(): void
     {
+        $clients = $this->config()->get($this->getConfigKey(), []);
+
         if ($this->bundle->getApp()->configurationIsCached()) {
+            $this->registry()->register($clients);
+
             return;
         }
 
         foreach ($this->getConfigs() as $configs) {
-            $this->config()->set(
-                $this->getConfigKey(),
-                [
-                    ...$this->config()->get($this->getConfigKey(), []),
-                    ...$configs
-                ]
-            );
+            $clients = [
+                ...$clients,
+                ...$configs
+            ];
         }
+
+        $this->config()->set(
+            $this->getConfigKey(),
+            $clients
+        );
+
+        $this->registry()->register($clients);
     }
 
     protected function getConfigs(): iterable
