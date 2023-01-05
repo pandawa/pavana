@@ -19,9 +19,13 @@ final class JsonDecodePlugin implements Plugin
         $promise = $next($request);
 
         return $promise->then(function (ResponseInterface $response) {
-            if (!empty($contentType = $response->getHeader('Content-Type'))) {
-                if (false !== array_search('application/json', $contentType)) {
-                    return json_decode($response->getBody()->getContents(), true);
+            if (!empty($contentTypes = $response->getHeader('Content-Type'))) {
+                foreach ($contentTypes as $contentType) {
+                    foreach (explode(';', $contentType) as $item) {
+                        if (str_contains('application/json', $item)) {
+                            return json_decode($response->getBody()->getContents(), true);
+                        }
+                    }
                 }
             }
 
