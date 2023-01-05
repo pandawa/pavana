@@ -1,2 +1,2 @@
 pavana.plugins.json_decode:
-  class: Pandawa\Pavana\Plugin\JsonDecodePlugin
+  class: Pandawa\Pavana\HttpClient\Plugin\JsonDecodePlugin
